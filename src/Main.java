@@ -11,6 +11,7 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
+import java.util.Objects;
 
 
 public class Main extends Application {
@@ -58,8 +59,8 @@ public class Main extends Application {
         });
         searchButton.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
-                HashMap<String, String> fields = new HashMap<String, String>();
-                if(ageBox.getText().trim().length() >0){ fields.put("age",ageBox.getText());}
+                HashMap<String, Object> fields = new HashMap<String, Object>();
+                if(ageBox.getText().trim().length() >0){ fields.put("age",Integer.parseInt(ageBox.getText()));}
                 if(firstNameBox.getText().trim().length() >0){ fields.put("firstName",firstNameBox.getText());}
                 if(lastNameBox.getText().trim().length() >0){ fields.put("lastName",lastNameBox.getText());}
 
@@ -106,8 +107,7 @@ public class Main extends Application {
             public void handle(ActionEvent event) {
 
                 Patient newPatient = new Patient(firstNameBox.getText(), lastNameBox.getText(),
-                  ageBox.getText());
-              //    public Person(String id, String firstName, String lastName, int age) {
+                  Integer.parseInt(ageBox.getText()));
               DatabaseConnection connection = new DatabaseConnection();
               connection.addPatient(newPatient);
 

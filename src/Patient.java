@@ -5,8 +5,12 @@ class Patient extends BasicDBObject {
     private String firstName;
     private String lastName;
 
+    Patient(String firstName, String lastName) {
+        put("firstName", firstName);
+        put("lastName", lastName);
+    }
 
-     Patient(String firstName, String lastName, String age) {
+     Patient(String firstName, String lastName, int age) {
          put("firstName", firstName);
          put("lastName", lastName);
          put("age", age);

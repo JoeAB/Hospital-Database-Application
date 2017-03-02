@@ -11,7 +11,6 @@ import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
 import java.util.HashMap;
-import java.util.Objects;
 
 
 public class Main extends Application {
@@ -66,13 +65,14 @@ public class Main extends Application {
 
                 DatabaseConnection connection = new DatabaseConnection();
                 connection.getPatients(fields);
+                connection.averageAge();
+                connection.mostCommon();
             }
         });
     }
 
     private static void addScrean(Stage primaryStage){
         GridPane addMenu = new GridPane();
-
         //creating all controls to be used within the menu
         Text fNameLabel = new Text("First Name:");
 

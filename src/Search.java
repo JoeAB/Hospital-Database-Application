@@ -11,10 +11,10 @@ import javafx.stage.Stage;
 import java.util.HashMap;
 
 /**
- * Created by joebennett on 2/27/17.
+ * Created by joebennett on 3/3/17.
  */
-public class StatFunctions {
-   static void statMenu(Stage primaryStage){
+public class Search {
+  static void searchMenu(Stage primaryStage){
     GridPane addMenu = new GridPane();
     //creating all controls to be used within the menu
     Text idLabel = new Text("ID:");

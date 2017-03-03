@@ -19,10 +19,10 @@ class DatabaseConnection {
       System.out.println("Critical error encountered.");
     }
   }
-    void addPatient(Patient patient){
-      MongoCollection patients = database.getCollection("patient");
-      org.bson.Document document= new org.bson.Document();
-      patients.insertOne(document.parse(patient.toJson()));
+  void add(BasicDBObject person, String type){
+    MongoCollection collection = database.getCollection(type);
+    org.bson.Document document= new org.bson.Document();
+    collection.insertOne(document.parse(person.toJson()));
   }
 
   ArrayList<Patient> getPatients(HashMap search) {
@@ -83,5 +83,21 @@ class DatabaseConnection {
     for (DBObject document: output.results()) {
       System.out.println(document.get("_id")+": "+document.get("count"));
     }
+  }
+  void getPatientDoctor(){
+    /*
+     $lookup:
+     {
+       from: <collection to join>,
+       localField: <field from the input documents>,
+       foreignField: <field from the documents of the "from" collection>,
+       as: <output array field>
+     }
+     */
+    DBObject lookupFields = new BasicDBObject("from","doctor");
+    lookupFields.put("localField","doctor");
+    lookupFields.put("foreignField", "_id");
+    DBObject lookUp = new BasicDBObject("$lookup", lookupFields);
+
   }
 }

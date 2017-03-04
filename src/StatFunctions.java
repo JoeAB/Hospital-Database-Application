@@ -59,7 +59,7 @@ public class StatFunctions {
         if(lastNameBox.getText().trim().length() >0){ fields.put("lastName",lastNameBox.getText());}
 
         DatabaseConnection connection = new DatabaseConnection();
-        connection.getPatients(fields);
+        connection.searchDB(fields, "patient");
         connection.averageAge();
         connection.mostCommon();
       }

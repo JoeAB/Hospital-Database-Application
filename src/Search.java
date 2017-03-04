@@ -1,13 +1,17 @@
+import com.mongodb.BasicDBObject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -30,6 +34,8 @@ public class Search {
     Button returnMain = new Button();
     returnMain.setText("Return to Main Menu");
 
+    ListView<String> resultsList = new ListView<String>();
+    resultsList.setVisible(false);
     //putting the controls into the organization pane
     addMenu.add(idLabel,0,0);
     addMenu.add(idBox, 1,0 );
@@ -39,7 +45,8 @@ public class Search {
     addMenu.add(lastNameBox, 1,2);
     addMenu.add(ageLabel,0,3);
     addMenu.add(ageBox, 1,3);
-    addMenu.add(searchButton,1,4);
+    addMenu.add(resultsList, 1,4);
+    addMenu.add(searchButton,1,9);
     addMenu.add(returnMain,1,10);
 
     //setting the scene for adding
@@ -59,9 +66,23 @@ public class Search {
         if(lastNameBox.getText().trim().length() >0){ fields.put("lastName",lastNameBox.getText());}
 
         DatabaseConnection connection = new DatabaseConnection();
-        connection.getPatients(fields);
+        ArrayList<BasicDBObject> results = connection.searchDB(fields,"patient");
+        resultsList.getItems().clear();
+        if (results.size() > 0){
+          for (BasicDBObject a:results) {
+            resultsList.getItems().add(a.get("firstName") +" "+a.get("lastName")+" : "+a.get("_id"));
+            resultsList.setVisible(true);
+          }
+        }
         connection.averageAge();
         connection.mostCommon();
+      }
+    });
+    resultsList.setOnMouseClicked(new EventHandler<MouseEvent>() {
+      @Override
+      public void handle(MouseEvent event) {
+        String id = resultsList.getSelectionModel().getSelectedItem().split(":")[1];
+        System.out.println(id);
       }
     });
   }

@@ -41,6 +41,11 @@ public class Main extends Application {
                 AddPatient.addScrean(primaryStage);
             }
         });
+        addDoctor.setOnAction(new EventHandler<ActionEvent>() {
+            @Override public void handle(ActionEvent e) {
+                AddDoctor.addScrean(primaryStage);
+            }
+        });
         quit.setOnAction(new EventHandler<ActionEvent>() {
             @Override public void handle(ActionEvent e) {
                 System.exit(0);

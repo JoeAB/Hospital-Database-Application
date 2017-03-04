@@ -19,25 +19,26 @@ class DatabaseConnection {
       System.out.println("Critical error encountered.");
     }
   }
+
   void add(BasicDBObject person, String type){
     MongoCollection collection = database.getCollection(type);
     org.bson.Document document= new org.bson.Document();
     collection.insertOne(document.parse(person.toJson()));
   }
 
-  ArrayList<Patient> getPatients(HashMap search) {
-    MongoCollection patients = database.getCollection("patient");
+  //code to create a more generalized search method
+  ArrayList<BasicDBObject> searchDB(HashMap search, String type) {
+    MongoCollection collection = database.getCollection(type, BasicDBObject.class);
     BasicDBObject fields = new BasicDBObject();
     for (Object key : search.keySet()) {
-      if (search.get(key) != "") {
         fields.put(key.toString(), search.get(key));
-      }
     }
-   MongoCursor<Patient> cursor = patients.find(fields).iterator();
+    MongoCursor<BasicDBObject> cursor = collection.find(fields).iterator();
+    ArrayList<BasicDBObject> results = new ArrayList<BasicDBObject>();
     while(cursor.hasNext()){
-      System.out.println(cursor.next());
+      results.add(cursor.next());
     }
-    return new ArrayList<>();
+    return results;
   }
 
   void averageAge(){
@@ -60,6 +61,7 @@ class DatabaseConnection {
     }
   }
 
+  //try to change method to allow string input parameter to find most common occurrence of particular fields
   void mostCommon(){
     DB database = mongoClient.getDB("hospital_db");
     DBCollection patients =  database.getCollection("patient");
@@ -73,7 +75,6 @@ class DatabaseConnection {
     DBObject groupFields = new BasicDBObject( "_id", "$lastName");
     groupFields.put("count", new BasicDBObject( "$sum", 1));
     DBObject group = new BasicDBObject("$group", groupFields);
-    //{ $sort: { score: { $meta: "textScore" }, posts: -1 } }
     //sort by the count from greatest to least
     DBObject sortFields = new BasicDBObject("$sort", new BasicDBObject("count", -1));
     //limit return results to 1 record
@@ -84,6 +85,7 @@ class DatabaseConnection {
       System.out.println(document.get("_id")+": "+document.get("count"));
     }
   }
+
   void getPatientDoctor(){
     /*
      $lookup:

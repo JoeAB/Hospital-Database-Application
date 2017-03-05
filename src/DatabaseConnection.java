@@ -2,6 +2,7 @@ import com.mongodb.*;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.MongoCursor;
 import com.mongodb.client.MongoDatabase;
+import org.bson.types.ObjectId;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -86,20 +87,35 @@ class DatabaseConnection {
     }
   }
 
-  void getPatientDoctor(){
-    /*
-     $lookup:
-     {
-       from: <collection to join>,
-       localField: <field from the input documents>,
-       foreignField: <field from the documents of the "from" collection>,
-       as: <output array field>
-     }
-     */
+  void getPatientDoctor(String patientID){
+    DB database = mongoClient.getDB("hospital_db");
+    DBCollection patients =  database.getCollection("patient");
+    BasicDBObject match = new BasicDBObject();
+    BasicDBObject matchQuery = new BasicDBObject();
+    matchQuery.put("_id", new ObjectId(patientID));
+    match.put("$match", matchQuery);
+
+    //DBObject match = new BasicDBObject("$match", new BasicDBObject().put("_id",new ObjectId(patientID)));
     DBObject lookupFields = new BasicDBObject("from","doctor");
-    lookupFields.put("localField","doctor");
+    lookupFields.put("localField","doctorID");
     lookupFields.put("foreignField", "_id");
+    lookupFields.put("as","doctorResult");
     DBObject lookUp = new BasicDBObject("$lookup", lookupFields);
 
+    AggregationOutput output = patients.aggregate(match, lookUp);
+    for (DBObject document: output.results()) {
+      BasicDBList result = (BasicDBList) document.get("doctorResult");
+      System.out.println(((BasicDBObject)result.get(0)).get("lastName"));
+    }
+  }
+
+  BulkWriteResult getPatientStats(ArrayList<BasicDBObject> queries){
+    DB database = mongoClient.getDB("hospital_db");
+    DBCollection patients =  database.getCollection("patient");
+    BulkWriteOperation stat = patients.initializeOrderedBulkOperation();
+    for (BasicDBObject query:queries) {
+      stat.find(query);
+    }
+    return stat.execute();
   }
 }

@@ -82,7 +82,8 @@ public class Search {
       @Override
       public void handle(MouseEvent event) {
         String id = resultsList.getSelectionModel().getSelectedItem().split(":")[1];
-        System.out.println(id);
+        DatabaseConnection connection = new DatabaseConnection();
+        connection.getPatientDoctor(id.trim());
       }
     });
   }

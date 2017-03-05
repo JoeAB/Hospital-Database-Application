@@ -1,12 +1,16 @@
+import com.mongodb.BasicDBObject;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
+import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.stage.Stage;
+
+import java.util.HashMap;
 
 /**
  * Created by joebennett on 3/3/17.
@@ -22,6 +26,15 @@ public class AddPatient {
     TextField lastNameBox = new TextField();
     Text ageLabel = new Text("Age:");
     TextField ageBox = new TextField();
+    Text conditionLabel = new Text("Condition: ");
+    TextField conditionBox = new TextField();
+    Text doctorLabel = new Text("Assigned Doctor: ");
+    ChoiceBox<String> doctorChoice= new ChoiceBox<String>();
+    DatabaseConnection connection = new DatabaseConnection();
+
+    for (BasicDBObject doctor:connection.searchDB(new HashMap(), "doctor")) {
+      doctorChoice.getItems().add("Dr. "+doctor.get("lastName")+": "+doctor.get("specialty")+": "+doctor.get("_id"));
+    }
     Button addButton = new Button();
     addButton.setText("Add");
     Button returnMain = new Button();
@@ -34,7 +47,11 @@ public class AddPatient {
     addMenu.add(lastNameBox, 1,2);
     addMenu.add(ageLabel,0,3);
     addMenu.add(ageBox, 1,3);
-    addMenu.add(addButton,1,4);
+    addMenu.add(conditionLabel,0,4);
+    addMenu.add(conditionBox,1,4);
+    addMenu.add(doctorLabel,0,5);
+    addMenu.add(doctorChoice,1,5);
+    addMenu.add(addButton,1,6);
     addMenu.add(returnMain,1,10);
     //setting the scene for adding
     addMenu.setAlignment(Pos.CENTER);
@@ -46,7 +63,7 @@ public class AddPatient {
       @Override
       public void handle(ActionEvent event) {
         Patient newPatient = new Patient(firstNameBox.getText(), lastNameBox.getText(),
-          Integer.parseInt(ageBox.getText()));
+          Integer.parseInt(ageBox.getText()), conditionBox.getText(), doctorChoice.getValue().split(":")[2].trim());
         DatabaseConnection connection = new DatabaseConnection();
         connection.add(newPatient, "patient");
 
